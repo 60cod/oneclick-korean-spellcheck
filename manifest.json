@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "한글 맞춤법 검사기",
+  "version": "1.0.0",
+  "description": "실시간 한글 맞춤법 검사 및 교정",
+
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+
+  "host_permissions": [
+    "https://dcplxo2e85.execute-api.ap-northeast-2.amazonaws.com/*"
+  ],
+
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content.js"],
+    "css": ["styles/content.css"],
+    "run_at": "document_idle"
+  }],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_title": "한글 맞춤법 검사기"
+  },
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

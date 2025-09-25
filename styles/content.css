@@ -1,0 +1,394 @@
+/* content.css - 맞춤법 검사 결과 스타일링 */
+
+/* 기본 오류 스타일 */
+.spell-error {
+    cursor: help !important;
+    position: relative;
+    text-decoration: underline wavy !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 2px !important;
+    transition: all 0.2s ease;
+    background-color: transparent !important;
+}
+
+/* 오류 유형별 색상 - 10가지 nCorrectMethod */
+.error-type-1 {
+    text-decoration-color: #ff4444 !important;
+}
+
+.error-type-2 {
+    text-decoration-color: #ff6600 !important;
+}
+
+.error-type-3 {
+    text-decoration-color: #ff8800 !important;
+}
+
+.error-type-4 {
+    text-decoration-color: #ffaa00 !important;
+}
+
+.error-type-5 {
+    text-decoration-color: #ffcc00 !important;
+}
+
+.error-type-6 {
+    text-decoration-color: #cccc00 !important;
+}
+
+.error-type-7 {
+    text-decoration-color: #88cc00 !important;
+}
+
+.error-type-8 {
+    text-decoration-color: #44cc00 !important;
+}
+
+.error-type-9 {
+    text-decoration-color: #00cc44 !important;
+}
+
+.error-type-10 {
+    text-decoration-color: #0088cc !important;
+}
+
+/* Fallback for browsers that don't support wavy underlines */
+@supports not (text-decoration-style: wavy) {
+    .spell-error {
+        border-bottom: 2px dotted !important;
+        text-decoration: none !important;
+    }
+
+    .error-type-1 { border-bottom-color: #ff4444 !important; }
+    .error-type-2 { border-bottom-color: #ff6600 !important; }
+    .error-type-3 { border-bottom-color: #ff8800 !important; }
+    .error-type-4 { border-bottom-color: #ffaa00 !important; }
+    .error-type-5 { border-bottom-color: #ffcc00 !important; }
+    .error-type-6 { border-bottom-color: #cccc00 !important; }
+    .error-type-7 { border-bottom-color: #88cc00 !important; }
+    .error-type-8 { border-bottom-color: #44cc00 !important; }
+    .error-type-9 { border-bottom-color: #00cc44 !important; }
+    .error-type-10 { border-bottom-color: #0088cc !important; }
+}
+
+/* 호버 효과 */
+.spell-error:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 적용된 수정 */
+.spell-error.applied {
+    background-color: rgba(40, 167, 69, 0.2);
+    border-bottom: none;
+    text-decoration: line-through;
+}
+
+/* 무시된 오류 */
+.spell-error.ignored {
+    opacity: 0.5;
+    border-bottom-style: dotted;
+}
+
+/* Input field overlay for wavy underlines */
+.spell-input-overlay {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    z-index: 1 !important;
+    background: transparent !important;
+    color: transparent !important;
+    border: none !important;
+    overflow: hidden !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    letter-spacing: inherit !important;
+    text-align: inherit !important;
+}
+
+/* Enable events on error spans within input overlay */
+.spell-input-overlay .spell-error {
+    background-color: transparent !important;
+    color: transparent !important;
+    pointer-events: auto !important;
+    cursor: help !important;
+}
+
+/* Hover effect for input overlay error spans */
+.spell-input-overlay .spell-error:hover {
+    opacity: 0.8;
+}
+
+/* Legacy overlay styles */
+.spell-error-overlay {
+    pointer-events: none;
+    user-select: none;
+}
+
+.spell-error-highlight {
+    pointer-events: auto !important;
+    transition: all 0.2s ease;
+    border-radius: 2px;
+}
+
+.spell-error-highlight:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* 툴팁 스타일 */
+.spell-tooltip {
+    position: fixed !important;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 2147483647 !important; /* 최대값 사용 */
+    max-width: 320px;
+    min-width: 250px;
+    padding: 12px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Malgun Gothic', sans-serif;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+}
+
+/* 툴팁 헤더 */
+.tooltip-header {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.original-text {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+    flex: 1;
+}
+
+.error-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+}
+
+/* 수정 제안 목록 */
+.suggestion-list {
+    margin: 10px 0;
+}
+
+.suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    margin: 4px 0;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background-color: #fafafa;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f8ff;
+    border-color: #007bff;
+    transform: translateX(2px);
+}
+
+.suggestion-text {
+    flex: 1;
+    margin-right: 10px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* 수정 버튼 */
+.apply-btn {
+    padding: 4px 10px;
+    border: 1px solid #007bff;
+    border-radius: 3px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.apply-btn:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+    transform: scale(1.05);
+}
+
+.apply-btn:active {
+    transform: scale(0.95);
+}
+
+/* 문법 설명 */
+.explanation {
+    margin: 10px 0;
+    color: #666;
+    font-size: 12px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    background-color: #f8f9fa;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 3px solid #17a2b8;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+/* 액션 버튼 영역 */
+.actions {
+    margin-top: 12px;
+    text-align: right;
+    border-top: 1px solid #eee;
+    padding-top: 8px;
+}
+
+.ignore-btn {
+    padding: 5px 12px;
+    border: 1px solid #6c757d;
+    border-radius: 3px;
+    background: white;
+    color: #6c757d;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s ease;
+}
+
+.ignore-btn:hover {
+    background: #6c757d;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* 툴팁 화살표 효과 */
+.spell-tooltip::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid #ddd;
+}
+
+.spell-tooltip::after {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.spell-tooltip {
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .spell-tooltip {
+        max-width: calc(100vw - 40px);
+        left: 20px !important;
+    }
+
+    .tooltip-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .suggestion-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .apply-btn {
+        align-self: flex-end;
+        width: auto;
+    }
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+    .spell-tooltip {
+        background: #2d2d2d;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+
+    .original-text {
+        color: #e0e0e0;
+    }
+
+    .suggestion-item {
+        background-color: #3a3a3a;
+        border-color: #555;
+    }
+
+    .suggestion-item:hover {
+        background-color: #404040;
+    }
+
+    .suggestion-text {
+        color: #e0e0e0;
+    }
+
+    .explanation {
+        background-color: #3a3a3a;
+        color: #ccc;
+    }
+
+    .actions {
+        border-top-color: #555;
+    }
+
+    .ignore-btn {
+        background: #3a3a3a;
+        border-color: #666;
+        color: #ccc;
+    }
+
+    .ignore-btn:hover {
+        background: #666;
+        color: white;
+    }
+}
