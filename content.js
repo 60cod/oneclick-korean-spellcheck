@@ -303,6 +303,8 @@ class ContentSpellChecker {
         // Create overlay container
         const overlay = document.createElement('div');
         overlay.className = 'spell-input-overlay';
+        // Store reference to the input element for later lookup
+        overlay._inputElement = element;
         overlay.style.cssText = `
             position: absolute;
             top: 0;
@@ -696,7 +698,10 @@ class ContentSpellChecker {
 
     applyCorrection(errorId, suggestion, index) {
         const errorElement = document.querySelector(`[data-error-id="${errorId}"]`);
-        if (!errorElement) return;
+        if (!errorElement) {
+            console.warn('Error element not found:', errorId);
+            return;
+        }
 
         const inputElement = this.findInputElement(errorElement);
         const error = this.findErrorById(errorId);
@@ -714,15 +719,17 @@ class ContentSpellChecker {
                 inputElement.textContent = correctedText;
             }
 
-            // 시각적 피드백
-            this.showCorrectionFeedback(inputElement);
-
             // 툴팁 닫기
             this.closeTooltip();
 
             // 입력 이벤트 발생
             const inputEvent = new Event('input', { bubbles: true });
             inputElement.dispatchEvent(inputEvent);
+        } else {
+            console.warn('Cannot apply correction:', {
+                hasError: !!error,
+                hasInputElement: !!inputElement
+            });
         }
     }
 
@@ -750,7 +757,23 @@ class ContentSpellChecker {
     }
 
     findInputElement(errorElement) {
-        return errorElement.closest('textarea, input[type="text"], [contenteditable="true"]');
+        // First try to find parent input (for contentEditable)
+        let inputElement = errorElement.closest('textarea, input[type="text"], [contenteditable="true"]');
+
+        if (inputElement) {
+            return inputElement;
+        }
+
+        // If not found, check if error element is in an overlay
+        const overlay = errorElement.closest('.spell-input-overlay');
+        if (overlay) {
+            // Use stored reference to the input element
+            if (overlay._inputElement) {
+                return overlay._inputElement;
+            }
+        }
+
+        return null;
     }
 
     findErrorById(errorId) {
