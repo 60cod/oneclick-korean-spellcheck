@@ -115,6 +115,7 @@ class ContentSpellChecker {
         this.currentTooltip = null;
         this.isChecking = false;
         this.currentErrors = [];
+        this.ignoredErrors = new Set(); // Track ignored errors
         this.extensionInvalidated = false;
         this.tooltipHideTimer = null;
     }
@@ -198,11 +199,21 @@ class ContentSpellChecker {
                 const result = response.data;
                 this.currentErrors = result.errors;
 
+                // Filter out ignored errors
+                const filteredErrors = result.errors.filter(error => {
+                    const errorKey = `${error.start}-${error.end}-${error.original}`;
+                    return !this.ignoredErrors.has(errorKey);
+                });
+
+                if (filteredErrors.length === 0) {
+                    return; // No errors to display after filtering
+                }
+
                 // 캐시 저장
                 this.cache.set(text, result);
 
-                // 오류 표시
-                this.displayErrors(element, result.errors);
+                // 오류 표시 (filtered errors)
+                this.displayErrors(element, filteredErrors);
             } else {
             }
         } catch (error) {
@@ -333,6 +344,9 @@ class ContentSpellChecker {
             const errorText = text.substring(error.start, error.end);
             const span = document.createElement('span');
             span.className = `spell-error error-type-${error.correctMethod}`;
+            // Create unique error ID and add to error spans
+            const errorId = `${error.start}-${error.end}-${error.original}`;
+            span.setAttribute('data-error-id', errorId);
             span.style.cssText = `
                 color: transparent;
                 text-decoration: underline wavy;
@@ -428,6 +442,9 @@ class ContentSpellChecker {
                     const span = document.createElement('span');
                     span.className = `spell-error error-type-${error.correctMethod}`;
                     span.title = `${error.original} → ${error.suggestions?.join(' | ') || '수정 제안 없음'}`;
+                    // Create unique error ID and add to error spans
+                    const errorId = `${error.start}-${error.end}-${error.original}`;
+                    span.setAttribute('data-error-id', errorId);
                     span.setAttribute('data-error-start', error.start);
                     span.setAttribute('data-error-end', error.end);
 
@@ -469,7 +486,10 @@ class ContentSpellChecker {
         const beforeNode = document.createTextNode(beforeText);
         const span = document.createElement('span');
         span.className = `spell-error error-type-${error.correctMethod}`;
-        span.title = `${error.orgStr} → ${error.candWord}`;
+        span.title = `${error.original} → ${error.suggestions?.join(' | ') || '수정 제안 없음'}`;
+        // Create unique error ID and add to error spans
+        const errorId = `${error.start}-${error.end}-${error.original}`;
+        span.setAttribute('data-error-id', errorId);
         span.setAttribute('data-error-start', error.start);
         span.setAttribute('data-error-end', error.end);
         span.textContent = errorText;
@@ -524,7 +544,9 @@ class ContentSpellChecker {
         const error = errors[0]; // Show first error
         const tooltip = document.createElement('div');
         tooltip.className = 'spell-tooltip';
-        tooltip.setAttribute('data-error-id', error.start); // Use position as ID
+        // Create unique error ID for tooltip
+        const errorId = `${error.start}-${error.end}-${error.original}`;
+        tooltip.setAttribute('data-error-id', errorId);
 
         // Build suggestions list from correct property
         const candidates = error.suggestions || [];
@@ -705,10 +727,16 @@ class ContentSpellChecker {
     }
 
     ignoreError(errorId) {
-        const errorElement = document.querySelector(`[data-error-id="${errorId}"]`);
-        if (errorElement) {
-            errorElement.classList.add('ignored');
-        }
+        // Add to ignored errors set
+        this.ignoredErrors.add(errorId);
+
+        // Hide all error elements with this ID
+        const errorElements = document.querySelectorAll(`[data-error-id="${errorId}"]`);
+        errorElements.forEach(element => {
+            element.classList.add('ignored');
+            element.style.display = 'none'; // Hide completely
+        });
+
         this.closeTooltip();
     }
 
@@ -726,7 +754,10 @@ class ContentSpellChecker {
     }
 
     findErrorById(errorId) {
-        return this.currentErrors?.find(error => error.id === errorId);
+        return this.currentErrors?.find(error => {
+            const id = `${error.start}-${error.end}-${error.original}`;
+            return id === errorId;
+        });
     }
 }
 

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korean Spell Checker Test</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-container {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        .test-instructions {
+            background: #e7f3ff;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🇰🇷 한글 맞춤법 검사기 테스트</h1>
+
+    <div class="test-instructions">
+        <h3>테스트 방법:</h3>
+        <ol>
+            <li>아래 텍스트 박스에 <strong>"오랫만에 연락드립니다"</strong> 입력</li>
+            <li>1.5초 후 "오랫만에"에 빨간 wavy 밑줄 확인</li>
+            <li>오류 텍스트에 마우스 hover → 툴팁 표시 확인</li>
+            <li><strong>수정 버튼</strong> 클릭 → 텍스트가 "오랜만에"로 교체되는지 확인</li>
+            <li><strong>무시 버튼</strong> 클릭 → 빨간 줄이 사라지는지 확인</li>
+        </ol>
+    </div>
+
+    <div class="test-container">
+        <h3>테스트 영역 1: Textarea</h3>
+        <textarea placeholder="여기에 한글을 입력하세요. 예: 오랫만에 연락드립니다."></textarea>
+    </div>
+
+    <div class="test-container">
+        <h3>테스트 영역 2: Input Field</h3>
+        <input type="text" style="width: 100%; padding: 10px; font-size: 16px;" placeholder="여기에 한글을 입력하세요.">
+    </div>
+
+    <div class="test-container">
+        <h3>테스트 영역 3: ContentEditable</h3>
+        <div contenteditable="true" style="border: 1px solid #ddd; padding: 10px; min-height: 60px; border-radius: 4px;">
+            여기에 한글을 입력하세요.
+        </div>
+    </div>
+
+    <div class="test-instructions">
+        <h3>예상 결과:</h3>
+        <ul>
+            <li>✅ <strong>수정 버튼</strong>: 텍스트가 제안된 내용으로 교체</li>
+            <li>✅ <strong>무시 버튼</strong>: 빨간 줄 사라지고 다시 API 호출할 때까지 표시 안됨</li>
+            <li>✅ <strong>툴팁 hover</strong>: 마우스 벗어날 때 2초 후 사라짐</li>
+        </ul>
+    </div>
+</body>
+</html>
