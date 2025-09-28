@@ -215,6 +215,10 @@ class ContentSpellChecker {
                 // 오류 표시 (filtered errors)
                 this.displayErrors(element, filteredErrors);
             } else {
+                // API 키 설정이 필요한 경우
+                if (response.needsSetup) {
+                    this.showSetupMessage();
+                }
             }
         } catch (error) {
             // Extension context invalidated 에러는 조용히 처리
@@ -781,6 +785,45 @@ class ContentSpellChecker {
             const id = `${error.start}-${error.end}-${error.original}`;
             return id === errorId;
         });
+    }
+
+    showSetupMessage() {
+        // 설정 안내 메시지 (한 번만 표시)
+        if (this.setupMessageShown) return;
+        this.setupMessageShown = true;
+
+        const message = document.createElement('div');
+        message.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff3cd;
+            color: #856404;
+            padding: 12px 16px;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 10000;
+            font-family: system-ui, sans-serif;
+            font-size: 14px;
+            max-width: 300px;
+        `;
+        message.innerHTML = `
+            <div>맞춤법 검사를 위해 API 키 설정이 필요합니다.</div>
+            <button onclick="this.parentElement.remove()" style="
+                background: none; border: none; color: #856404;
+                text-decoration: underline; cursor: pointer; margin-top: 8px;
+            ">확인</button>
+        `;
+
+        document.body.appendChild(message);
+
+        // 5초 후 자동 제거
+        setTimeout(() => {
+            if (message.parentElement) {
+                message.remove();
+            }
+        }, 5000);
     }
 }
 

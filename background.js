@@ -1,7 +1,15 @@
 // background.js - Service Worker for API communication
+importScripts('storage.js');
 
-// API 키 (임시 하드코딩)
-const API_KEY = 'key'; // 실제 키로 교체 필요
+// 첫 설치 시 팝업 표시
+chrome.runtime.onInstalled.addListener(async (details) => {
+    if (details.reason === 'install') {
+        const isSetup = await ApiKeyStorage.isSetup();
+        if (!isSetup) {
+            chrome.action.openPopup();
+        }
+    }
+});
 
 // SpellError 클래스 정의
 class SpellError {
@@ -68,12 +76,45 @@ class SpellCheckResult {
 // 메시지 리스너 등록
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'checkSpelling') {
-        performSpellCheck(request.text, API_KEY)
-            .then(result => sendResponse({ success: true, data: result }))
-            .catch(error => sendResponse({ success: false, error: error.message }));
+        handleSpellCheck(request.text, sendResponse);
         return true; // 비동기 응답 유지
     }
+
+    if (request.action === 'setApiKey') {
+        ApiKeyStorage.set(request.apiKey)
+            .then(() => sendResponse({ success: true }))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        return true;
+    }
+
+    if (request.action === 'checkSetup') {
+        ApiKeyStorage.isSetup()
+            .then(isSetup => sendResponse({ isSetup }))
+            .catch(() => sendResponse({ isSetup: false }));
+        return true;
+    }
 });
+
+// 스펠체크 처리 함수
+async function handleSpellCheck(text, sendResponse) {
+    try {
+        const apiKey = await ApiKeyStorage.getDecoded();
+
+        if (!apiKey) {
+            sendResponse({
+                success: false,
+                error: 'API 키가 설정되지 않았습니다.',
+                needsSetup: true
+            });
+            return;
+        }
+
+        const result = await performSpellCheck(text, apiKey);
+        sendResponse({ success: true, data: result });
+    } catch (error) {
+        sendResponse({ success: false, error: error.message });
+    }
+}
 
 // API 호출 함수
 async function performSpellCheck(text, apiKey) {

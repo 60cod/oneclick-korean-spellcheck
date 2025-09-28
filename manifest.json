@@ -25,7 +25,8 @@
   },
 
   "action": {
-    "default_title": "한글 맞춤법 검사기"
+    "default_title": "한글 맞춤법 검사기",
+    "default_popup": "popup.html"
   },
 
   "icons": {
