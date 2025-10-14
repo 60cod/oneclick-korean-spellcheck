@@ -118,15 +118,35 @@ class ContentSpellChecker {
         this.ignoredErrors = new Set(); // Track ignored errors
         this.extensionInvalidated = false;
         this.tooltipHideTimer = null;
+        this.extensionEnabled = true; // Default to enabled
     }
 
     async init() {
         // 제외 대상 호스트 체크
         if (this.isExcludedHostname()) return;
 
+        // 확장 프로그램 활성화 상태 확인
+        await this.checkExtensionStatus();
+
         // 이벤트 리스너 등록
         this.attachEventListeners();
 
+        // Storage 변경 감지
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+            if (namespace === 'local' && changes.extensionEnabled) {
+                this.extensionEnabled = changes.extensionEnabled.newValue;
+            }
+        });
+    }
+
+    async checkExtensionStatus() {
+        try {
+            const { extensionEnabled = true } = await chrome.storage.local.get('extensionEnabled');
+            this.extensionEnabled = extensionEnabled;
+        } catch (error) {
+            // Default to enabled on error
+            this.extensionEnabled = true;
+        }
     }
 
     attachEventListeners() {
@@ -166,6 +186,9 @@ class ContentSpellChecker {
     }
 
     async checkSpelling(text, element) {
+        // 확장 프로그램이 비활성화된 경우 즉시 리턴
+        if (!this.extensionEnabled) return;
+
         if (this.isChecking || this.extensionInvalidated) return;
 
         // 캐시 확인

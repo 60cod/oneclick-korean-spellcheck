@@ -61,6 +61,67 @@
             font-size: 12px;
             margin-top: 4px;
         }
+        .toggle-container {
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .toggle-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .toggle-label span {
+            font-weight: 500;
+            color: #333;
+        }
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+            margin: 0;
+            padding: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 26px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: #007cba;
+        }
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        .status.disabled {
+            background: #f8d7da;
+            color: #721c24;
+        }
     </style>
 </head>
 <body>
@@ -81,6 +142,15 @@
     </div>
 
     <div id="ready-actions" style="display: none;">
+        <div class="toggle-container">
+            <label class="toggle-label">
+                <span>맞춤법 검사기 활성화</span>
+                <div class="toggle-switch">
+                    <input type="checkbox" id="extension-toggle" checked>
+                    <span class="toggle-slider"></span>
+                </div>
+            </label>
+        </div>
         <button id="reset-btn" class="secondary">설정 초기화</button>
     </div>
 

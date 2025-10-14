@@ -93,11 +93,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             .catch(() => sendResponse({ isSetup: false }));
         return true;
     }
+
+    if (request.action === 'toggleExtension') {
+        // 확장 프로그램 활성화 상태 변경
+        chrome.storage.local.set({ extensionEnabled: request.enabled })
+            .then(() => sendResponse({ success: true }))
+            .catch(error => sendResponse({ success: false, error: error.message }));
+        return true;
+    }
 });
 
 // 스펠체크 처리 함수
 async function handleSpellCheck(text, sendResponse) {
     try {
+        // 확장 프로그램 활성화 상태 확인
+        const { extensionEnabled = true } = await chrome.storage.local.get('extensionEnabled');
+
+        if (!extensionEnabled) {
+            sendResponse({
+                success: false,
+                error: '확장 프로그램이 비활성화되어 있습니다.',
+                disabled: true
+            });
+            return;
+        }
+
         const apiKey = await ApiKeyStorage.getDecoded();
 
         if (!apiKey) {

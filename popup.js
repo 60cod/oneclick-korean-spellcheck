@@ -10,6 +10,7 @@ class PopupManager {
         this.saveBtn = document.getElementById('save-btn');
         this.resetBtn = document.getElementById('reset-btn');
         this.errorMsg = document.getElementById('error-msg');
+        this.extensionToggle = document.getElementById('extension-toggle');
 
         this.init();
     }
@@ -25,6 +26,7 @@ class PopupManager {
         this.apiKeyInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.saveApiKey();
         });
+        this.extensionToggle.addEventListener('change', (e) => this.toggleExtension(e.target.checked));
     }
 
     async checkSetupStatus() {
@@ -33,6 +35,10 @@ class PopupManager {
 
             if (response.isSetup) {
                 this.showReadyState();
+                // 확장 프로그램 활성화 상태 확인
+                const { extensionEnabled = true } = await chrome.storage.local.get('extensionEnabled');
+                this.extensionToggle.checked = extensionEnabled;
+                this.updateStatusByToggle(extensionEnabled);
             } else {
                 this.showSetupState();
             }
@@ -98,6 +104,35 @@ class PopupManager {
             this.showSetupState();
         } catch (error) {
             this.showError('초기화 중 오류가 발생했습니다.');
+        }
+    }
+
+    async toggleExtension(enabled) {
+        try {
+            await chrome.storage.local.set({ extensionEnabled: enabled });
+            this.updateStatusByToggle(enabled);
+
+            // background에 상태 변경 알림
+            chrome.runtime.sendMessage({
+                action: 'toggleExtension',
+                enabled: enabled
+            });
+        } catch (error) {
+            this.showError('설정 저장 중 오류가 발생했습니다.');
+            // 실패 시 이전 상태로 롤백
+            this.extensionToggle.checked = !enabled;
+        }
+    }
+
+    updateStatusByToggle(enabled) {
+        if (enabled) {
+            this.statusIcon.textContent = '✅';
+            this.statusText.textContent = '활성화됨';
+            this.statusDisplay.className = 'status ready';
+        } else {
+            this.statusIcon.textContent = '⏸️';
+            this.statusText.textContent = '비활성화됨';
+            this.statusDisplay.className = 'status disabled';
         }
     }
 
