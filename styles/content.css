@@ -248,13 +248,14 @@
     color: #666;
     font-size: 12px;
     line-height: 1.5;
-    white-space: pre-wrap;
+    white-space: pre-line;
     background-color: #f8f9fa;
     padding: 8px;
     border-radius: 4px;
     border-left: 3px solid #17a2b8;
     max-height: 100px;
     overflow-y: auto;
+    text-align: left;
 }
 
 /* 액션 버튼 영역 */
@@ -375,6 +376,7 @@
     .explanation {
         background-color: #3a3a3a;
         color: #ccc;
+        text-align: left;
     }
 
     .actions {

@@ -600,9 +600,7 @@ class ContentSpellChecker {
                 </div>
             ` : '<div class="no-suggestions">수정 제안이 없습니다</div>'}
             ${error.description ? `
-                <div class="explanation">
-                    ${error.description.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '')}
-                </div>
+                <div class="explanation">${error.description.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '').trim()}</div>
             ` : ''}
             <div class="actions">
                 <button class="ignore-btn">무시</button>
